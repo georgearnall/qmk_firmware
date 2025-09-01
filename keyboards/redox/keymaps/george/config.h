@@ -34,4 +34,4 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define RGBLIGHT_VAL_STEP 8
 
 // Increase debounce to fix chatty keys
-#define DEBOUNCE 15
+#define DEBOUNCE 25
