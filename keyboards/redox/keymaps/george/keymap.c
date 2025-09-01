@@ -17,47 +17,22 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 #include QMK_KEYBOARD_H
 
-/*  https://www.reddit.com/r/olkb/comments/pgdsh6/possible_to_keep_screen_alive_with_qmk/
- *  Code to prevent computer from falling asleep.
+/*
+ *  Code to prevent computer from falling asleep too soon
  */
 
-#define SCREENSAVE_INTERVAL 60000  //configure how long to wait after last activity. 60000ms = 1 min
-#define SCREENSAVE_DELAY 1800000  //configure how long the screensave delay should apply for. 1800000ms = 30 mins
+#define SCREENSAVE_INTERVAL 60000  // configure how long to wait after last activity. 60000ms = 1 min
+#define SCREENSAVE_DELAY 1800000  // configure how long the screensave delay should apply for. 1800000ms = 30 mins
 
-enum custom_keycodes {
-	NO_SLEEP = SAFE_RANGE,  //custom macro key.  turns on screensaver mode
-	//other macros,
-	//...
-};
-
-
-bool stop_screensaver = true;     //screensaver mode status
 uint32_t last_activity_timer = 0;
-uint32_t last_pressed_f13_timer = 0;
-
-bool process_record_user(uint16_t keycode, keyrecord_t *record) {
-    if (record->event.pressed && keycode != KC_F13) {
-        last_activity_timer = timer_read32();  //reset timer
-     }
-
-	// switch (keycode) {
-	// 	case NO_SLEEP:
-	// 		if (record->event.pressed) {               //if NO_SLEEP is pressed
-    //             stop_screensaver = !stop_screensaver;  //turn on screensaver mode
-    //             last_activity_timer = timer_read32();  //reset timer
-    //         }
-	// 		break;
-	// 	//other macros...
-	// }
-	return true;
-}
-
+uint32_t last_moved_cursor_timer = 0;
 
 void matrix_scan_user(void) {
-    if (timer_elapsed32(last_activity_timer) < SCREENSAVE_DELAY) {              //if screensaver mode is active
-        if (timer_elapsed32(last_pressed_f13_timer) > SCREENSAVE_INTERVAL) {    //and no key has been pressed in more than SCREENSAVE_DELAY ms
-			tap_code16(KC_F13);						                            //  tap F13
-			last_pressed_f13_timer = timer_read32();                            //  reset last_tapped
+    if (timer_elapsed32(last_activity_timer) < SCREENSAVE_DELAY) {
+        if (timer_elapsed32(last_moved_cursor_timer) > SCREENSAVE_INTERVAL) {
+            tap_code16(KC_MS_RIGHT);
+            tap_code16(KC_MS_LEFT);
+			last_moved_cursor_timer = timer_read32();
 		}
 	}
 }
