@@ -26,12 +26,13 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 uint32_t last_activity_timer = 0;
 uint32_t last_moved_cursor_timer = 0;
+bool left_or_right = false;
 
 void matrix_scan_user(void) {
     if (timer_elapsed32(last_activity_timer) < SCREENSAVE_DELAY) {
         if (timer_elapsed32(last_moved_cursor_timer) > SCREENSAVE_INTERVAL) {
-            tap_code16(KC_MS_RIGHT);
-            tap_code16(KC_MS_LEFT);
+            tap_code16(left_or_right ? KC_MS_LEFT : KC_MS_RIGHT);
+            left_or_right = !left_or_right;
 			last_moved_cursor_timer = timer_read32();
 		}
 	}
